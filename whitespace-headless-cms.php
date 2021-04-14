@@ -120,7 +120,9 @@ add_filter("admin_footer_text", "");
 /*
  * Disable json rest api if WP GraphQL is enabled
  */
-if (is_plugin_active("wp-grahql")) {
-  add_filter("json_enabled", "__return_false");
-  add_filter("json_jsonp_enabled", "__return_false");
-}
+add_filter("json_enabled", function ($enabled) {
+  return $enabled && !is_plugin_active("wp-grahql");
+});
+add_filter("json_jsonp_enabled", function ($enabled) {
+  return $enabled && !is_plugin_active("wp-grahql");
+});
