@@ -1,0 +1,18 @@
+{
+  "name": "whitespace-se/wordpress-plugin-headless-cms",
+  "description": "Wordpress plugin that turns your site into a headless CMS",
+  "type": "wordpress-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Whitespace Dev",
+      "email": "code@whitespace.se"
+    }
+  ],
+  "require": {
+    "composer/installers": "~1.0"
+  },
+  "extra": {
+    "installer-name": "whitespace-headless-cms"
+  }
+}
