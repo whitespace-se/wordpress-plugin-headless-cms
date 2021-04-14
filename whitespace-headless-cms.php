@@ -126,3 +126,18 @@ add_filter("json_enabled", function ($enabled) {
 add_filter("json_jsonp_enabled", function ($enabled) {
   return $enabled && !is_plugin_active("wp-grahql");
 });
+
+/*
+ * Enable GraphQL introspection
+ */
+add_filter(
+  "graphql_get_setting_section_field_value",
+  function ($value, $default, $option_name) {
+    if ($option_name == "public_introspection_enabled") {
+      $value = true;
+    }
+    return $value;
+  },
+  10,
+  3,
+);
