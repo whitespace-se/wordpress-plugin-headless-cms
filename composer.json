@@ -9,6 +9,11 @@
       "email": "code@whitespace.se"
     }
   ],
+  "autoload": {
+    "psr-4": {
+      "Whitespace\\HeadlessCms\\": "src/"
+    }
+  },
   "require": {
     "composer/installers": "~1.0"
   },
