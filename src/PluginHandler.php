@@ -14,8 +14,8 @@ class PluginHandler {
 
   public function onAdminMenu() {
     add_options_page(
-      __("Headless", "whitespace-headless-cms"),
       __("Headless settings", "whitespace-headless-cms"),
+      __("Headless", "whitespace-headless-cms"),
       "manage_options",
       __("whitespace-headless-cms"),
       [$this, "renderOptionsPage"],
