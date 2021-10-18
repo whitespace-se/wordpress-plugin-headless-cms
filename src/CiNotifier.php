@@ -66,7 +66,7 @@ class CiNotifier {
 
   public function getNotificationUrls(): array {
     if (defined("CI_NOTIFY_URLS") && !is_null(CI_NOTIFY_URLS)) {
-      $endpoints = constant(CI_NOTIFY_URLS);
+      $endpoints = CI_NOTIFY_URLS;
       if (!is_array($endpoints)) {
         $endpoints = self::splitUserInput($endpoints);
       }
