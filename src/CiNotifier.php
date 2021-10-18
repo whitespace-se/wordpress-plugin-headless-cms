@@ -30,19 +30,51 @@ class CiNotifier {
       "ci_notify_urls",
       __("CI Notify URLs", "whitespace-headless-cms"),
       function () {
-        printf(
-          '<textarea id="%s" name="%s[%s]" rows="5" cols="40" placeholder="%s">%s</textarea>',
-          "ci_notify_urls",
-          $this->pluginHandler::OPTION_NAME,
-          "ci_notify_urls",
-          esc_attr(implode('\n', $this->getNotificationUrls())),
-          esc_attr(
-            implode(
-              '\n',
-              $this->pluginHandler->getOption("ci_notify_urls", []),
-            ),
-          ),
-        );
+        $overriden = defined("CI_NOTIFY_URLS") && !is_null(CI_NOTIFY_URLS); ?>
+        <textarea
+          id="ci_notify_urls"
+          name="<?php echo $this->pluginHandler
+            ::OPTION_NAME; ?>[ci_notify_urls]"
+          rows="5"
+          cols="40"
+          style="width: 100%;"
+          <?php if ($overriden) {
+            echo "disabled";
+          } ?>
+        ><?php echo htmlspecialchars(
+          implode("\n", $this->pluginHandler->getOption("ci_notify_urls", [])),
+          ENT_NOQUOTES,
+        ); ?></textarea>
+
+        <div class="description">
+          <p><?php _e(
+            "URLs that will be requested each time a post is updated. One per line.",
+            "whitespace-headless-cms",
+          ); ?></p>
+          <p><?php _e(
+            "Available replacements",
+            "whitespace-headless-cms",
+          ); ?>:</p>
+          <ul>
+            <li><code>{DESCRIPTION}</code> &ndash; <?php _e(
+              "The reason for the notification, e.g. \"Post 42 updated in WordPress\"",
+              "whitespace-headless-cms",
+            ); ?></li>
+            <li><code>{BLOG_ID}</code> &ndash; <?php _e(
+              "Blog ID (for multisites)",
+              "whitespace-headless-cms",
+            ); ?></li>
+            <li><code>{BLOG_DOMAIN}</code> &ndash; <?php _e(
+              "Blog domain (for multisites)",
+              "whitespace-headless-cms",
+            ); ?></li>
+            <li><code>{BLOG_PATH}</code> &ndash; <?php _e(
+              "Blog path without leading or trailing slash (for multisites)",
+              "whitespace-headless-cms",
+            ); ?></li>
+          </ul>
+        </div>
+        <?php
       },
       $this->pluginHandler::OPTION_SECTIONS,
       self::OPTION_SECTION,
@@ -95,8 +127,18 @@ class CiNotifier {
     if (empty($ci_notify_urls)) {
       return;
     }
+    $replacements = [];
+    $replacements["DESCRIPTION"] = $description;
+    if (is_multisite()) {
+      $blog_details = get_blog_details();
+      $replacements["BLOG_ID"] = $blog_details->blog_id;
+      $replacements["BLOG_DOMAIN"] = $blog_details->domain;
+      $replacements["BLOG_PATH"] = trim($blog_details->path, "/");
+    }
     foreach ($ci_notify_urls as $url) {
-      $url = str_replace("{DESCRIPTION}", urlencode($description), $url);
+      foreach ($replacements as $key => $value) {
+        $url = str_replace("{" . $key . "}", urlencode($value), $url);
+      }
       $user = parse_url($url, PHP_URL_USER);
       $pass = parse_url($url, PHP_URL_PASS);
       // error_log(var_export(["ci notify" => $url], true));
