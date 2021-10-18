@@ -5,29 +5,70 @@ namespace Whitespace\HeadlessCms;
 class CiNotifier {
   private $pluginHandler;
 
+  public const OPTION_SECTION = "ci-notifier";
+
   public function __construct(PluginHandler $plugin_handler) {
     $this->pluginHandler = $plugin_handler;
 
     add_action("save_post", [$this, "onSavePost"], 10, 2);
+    add_action("admin_init", [$this, "onAdminInit"]);
+    add_filter("WhitespaceHeadlessCms/sanitize_option", [
+      $this,
+      "sanitizeOption",
+    ]);
   }
 
-  private static function splitUserInput($input, $delimiter = "") {
+  public function onAdminInit() {
+    add_settings_section(
+      self::OPTION_SECTION,
+      __("Headless settings", "whitespace-headless-cms"),
+      null,
+      $this->pluginHandler::OPTION_SECTIONS,
+    );
+
+    add_settings_field(
+      "ci_notify_urls",
+      __("CI Notify URLs", "whitespace-headless-cms"),
+      function () {
+        printf(
+          '<textarea id="%s" name="%s[%s]" rows="5" cols="40" placeholder="%s">%s</textarea>',
+          "ci_notify_urls",
+          $this->pluginHandler::OPTION_NAME,
+          "ci_notify_urls",
+          esc_attr(implode('\n', $this->getNotificationUrls())),
+          esc_attr(
+            implode(
+              '\n',
+              $this->pluginHandler->getOption("ci_notify_urls", []),
+            ),
+          ),
+        );
+      },
+      $this->pluginHandler::OPTION_SECTIONS,
+      self::OPTION_SECTION,
+    );
+  }
+
+  public function sanitizeOption($input) {
+    $input["ci_notify_urls"] = isset($input["ci_notify_urls"])
+      ? $this->splitUserInput($input["ci_notify_urls"])
+      : [];
+    return $input;
+  }
+
+  private static function splitUserInput($input) {
     if (empty($input)) {
       return [];
     }
-    preg_match_all(
-      "/\s*([^\R{$delimiter}\s][^\R{$delimiter}]*?)\s*(?:[\R{$delimiter}]|$)/x",
-      $input,
-      $matches,
-    );
-    return $matches[0] ?? [];
+    preg_match_all('/([^,\s][^,]+?)\s*(?:,|$)/m', $input, $matches);
+    return $matches[1] ?? [];
   }
 
   public function getNotificationUrls(): array {
-    if (defined("CI_NOTIFY_URLS")) {
-      $endpoints = constant("CI_NOTIFY_URLS");
+    if (defined("CI_NOTIFY_URLS") && !is_null(CI_NOTIFY_URLS)) {
+      $endpoints = constant(CI_NOTIFY_URLS);
       if (!is_array($endpoints)) {
-        $endpoints = self::splitUserInput($endpoints, ",");
+        $endpoints = self::splitUserInput($endpoints);
       }
     } else {
       $endpoints = $this->pluginHandler->getOption("ci_notify_urls", []);
