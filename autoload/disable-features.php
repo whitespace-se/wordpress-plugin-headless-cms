@@ -68,7 +68,7 @@ add_filter(
   "graphql_get_setting_section_field_value",
   function ($value, $default, $option_name) {
     if ($option_name == "public_introspection_enabled") {
-      $value = true;
+      $value = "on";
     }
     return $value;
   },
