@@ -49,7 +49,7 @@ add_action("init", function () {
 /*
  * Remove footer text
  */
-add_filter("admin_footer_text", "");
+add_filter("admin_footer_text", function() {});
 
 /*
  * Disable json rest api if WP GraphQL is enabled
