@@ -1,52 +1,64 @@
 <?php
 
-function filter_pages($page, $page_to_compare = null, $function = 'filter')
+function filter_pages($page)
 {
     $default_page_values = [
         'parent_page' => null,
         'sub_page' => null,
-        'action' => "hide"
     ];
 
-    list('parent_page' => $parent_page, 'sub_page' => $sub_page, 'action' => $action) = array_merge($default_page_values, $page);
+    list('parent_page' => $parent_page, 'sub_page' => $sub_page) = array_merge($default_page_values, $page);
 
-    if ($function == "filter") {
-        switch ($action) {
-            case "show":
-                if ($sub_page && !empty($page_to_compare['sub_page'])) {
-                    return $page_to_compare['sub_page'] !== $sub_page;
-                } else {
-                    return $page_to_compare['parent_page'] !== $parent_page;
-                }
-            default:
-                return $page_to_compare;
-        }
-    } else if ($function == "hide") {
-        switch ($action) {
-            case "show":
-                return;
-            default:
-                if ($sub_page && !empty($sub_page)) {
-                    return remove_submenu_page(
-                        $parent_page,
-                        $sub_page
-                    );
-                } else {
-                    return remove_menu_page(
-                        $parent_page
-                    );
-                }
-        }
+    if ($sub_page && !empty($sub_page)) {
+        return remove_submenu_page(
+            $parent_page,
+            $sub_page
+        );
+    } else {
+        return remove_menu_page(
+            $parent_page
+        );
     }
 }
+
+function whitespace_headless_cms_hide_admin_page($page)
+{
+    return whitespace_headless_cms_hide_admin_pages([$page]);
+}
+
+function whitespace_headless_cms_hide_admin_pages($pages)
+{
+    add_filter("whitespace_headless_cms_hidden_admin_pages", function ($hidden_admin_pages) use ($pages) {
+        $hidden_admin_pages = array_merge($hidden_admin_pages, $pages);
+        return $hidden_admin_pages;
+    });
+}
+
+function whitespace_headless_cms_unhide_admin_page($page)
+{
+    return whitespace_headless_cms_unhide_admin_pages([$page]);
+}
+function whitespace_headless_cms_unhide_admin_pages($pages)
+{
+    add_filter("whitespace_headless_cms_hidden_admin_pages", function ($hidden_admin_pages) use ($pages) {
+        $admin_pages_to_display = [];
+        foreach ($hidden_admin_pages as $hidden_admin_page) {
+            if (!in_array($hidden_admin_page, $pages)) {
+                $admin_pages_to_display[] = $hidden_admin_page;
+            };
+        };
+
+        return $admin_pages_to_display;
+    });
+}
+
 
 
 /**
  * ADD FILTER TO HIDE OR SHOW ADMIN PAGES
  */
-
-add_filter("whitespace_headless_cms_filter_admin_pages", function ($pages = []) {
-    $default_pages_to_filter = [
+add_action('admin_init', function () {
+    $hidden_admin_pages = [
         [
             "parent_page" => "tools.php",
         ],
@@ -119,28 +131,14 @@ add_filter("whitespace_headless_cms_filter_admin_pages", function ($pages = []) 
         ]
     ];
 
+    $hidden_admin_pages = apply_filters("whitespace_headless_cms_hidden_admin_pages", $hidden_admin_pages);
+
     if (!current_user_can('manage_dev_options')) {
-
-        if (isset($pages)) {
-
-            foreach ($pages as $key => $page) {
-                $default_pages_to_filter = array_filter($default_pages_to_filter, function ($default_page_to_filter) use ($page) {
-                    return filter_pages($page, $default_page_to_filter, 'filter');
-                });
-            }
-
-            $default_pages_to_filter = array_merge($default_pages_to_filter, $pages);
-        }
-
-
-
-        foreach ($default_pages_to_filter as $key => $default_page_to_filter) {
-            filter_pages($default_page_to_filter, null, 'hide');
+        foreach ($hidden_admin_pages as $key => $page) {
+            filter_pages($page);
         }
     }
-}, 10, 1);
-
-
+});
 
 /* CREATE USER ROLE DEVELOPER */
 add_action('admin_init', function () {
