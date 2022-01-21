@@ -2,7 +2,7 @@
   "name": "whitespace-se/wordpress-plugin-headless-cms",
   "description": "Wordpress plugin that turns your site into a headless CMS",
   "type": "wordpress-plugin",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "authors": [
     {
       "name": "Whitespace Dev",
