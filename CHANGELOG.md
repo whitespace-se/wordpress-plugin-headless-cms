@@ -1,3 +1,7 @@
+# [1.0.0](https://github.com/whitespace-se/wordpress-plugin-headless-cms/compare/v0.2.1...v1.0.0) (2022-01-25)
+
+
+
 ## [0.2.1](https://github.com/whitespace-se/wordpress-plugin-headless-cms/compare/v0.2.0...v0.2.1) (2022-01-13)
 
 
