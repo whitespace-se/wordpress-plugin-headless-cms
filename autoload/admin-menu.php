@@ -181,7 +181,7 @@ add_action('admin_init', function () {
     foreach ($wp_roles->roles as $wp_role) {
         $wp_role_name = strtolower($wp_role['name']);
 
-        if ($wp_role_name === "developer") return;
+        if ($wp_role_name === "developer") break;
 
         foreach ($caps_to_remove as $cap) {
             if (isset($wp_role['capabilities'][$cap])) {
@@ -189,6 +189,11 @@ add_action('admin_init', function () {
                 $role->remove_cap($cap);
             }
         }
+    }
+
+    $role = get_role('developer');
+    foreach ($caps_to_remove as $cap) {
+            $role->add_cap($cap);
     }
 });
 
