@@ -202,3 +202,8 @@ add_action('admin_init', function () {
 add_filter('acf/settings/show_admin', function () {
     return current_user_can('manage_dev_options');
 });
+
+add_action('whitespace_headless_cms/activate', function() {
+  $user = wp_get_current_user();
+  $user->set_role('developer');
+});
