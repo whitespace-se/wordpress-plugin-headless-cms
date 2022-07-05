@@ -4,7 +4,7 @@
  * Plugin Name: Whitespace Headless CMS
  * Plugin URI: -
  * Description: Turns your Wordpress site into a headless CMS
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Whitespace
  * Author URI: https://www.whitespace.se/
  * Text Domain: whitespace-headless-cms
