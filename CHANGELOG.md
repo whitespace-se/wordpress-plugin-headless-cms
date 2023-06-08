@@ -1,3 +1,10 @@
+### [1.1.1](https://github.com/whitespace-se/wordpress-plugin-headless-cms/compare/v1.1.0...v1.1.1) (2023-06-08)
+
+
+### Bug Fixes
+
+* Error on ci notifier save ([673f61b](https://github.com/whitespace-se/wordpress-plugin-headless-cms/commit/673f61b0fbb8de965db6484af3f4e2e4200e837c))
+
 ## [1.1.0](https://github.com/whitespace-se/wordpress-plugin-headless-cms/compare/v1.0.0...v1.1.0) (2022-07-05)
 
 
