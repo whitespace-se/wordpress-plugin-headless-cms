@@ -89,6 +89,9 @@ class CiNotifier {
   }
 
   private static function splitUserInput($input) {
+    if (is_array($input)) {
+      return $input;
+    }
     if (empty($input)) {
       return [];
     }
@@ -118,7 +121,9 @@ class CiNotifier {
 
   public function onSavePost($post_id, $post): void {
     if (!wp_is_post_revision($post) && !wp_is_post_autosave($post)) {
-      $this->notify("Post {$post_id} updated in WordPress");
+      $this->notify(
+        "Post {$post_id} ({$post->post_type}) updated in WordPress",
+      );
     }
   }
 
